@@ -1,11 +1,14 @@
 /* eslint-disable react/jsx-key */
 import React, { useState, useEffect } from 'react';
-import ProductsGrid from '../../components/ProductsGrid';
+import ProductsGridShop from '../../components/ProductsGridShop';
+import ProductDetail from '../../components/ProductDetail';
 import productImage from '../../assets/images/pops.png';
 import { FaSearch } from 'react-icons/fa';
 import Layout from '../../components/Layout';
 
 function Shops({ productsList, categoriesList }) {
+  const [open, setOpen] = useState(false);
+  const [product, setProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [categoryFilter, setCategoryFilter] = useState([]);
@@ -51,6 +54,7 @@ function Shops({ productsList, categoriesList }) {
   return (
     <Layout>
       <div className="min-h-screen p-20">
+        <ProductDetail open={open} setOpen={setOpen} product={product} />
         <div className="flex">
           <div className=" w-64 flex-col flex-none max-h-screen min-h-screen p-3 border-r-2 border-gray-300">
             <div className="flex border-1 border-gray-500 bg-gray-100 rounded-lg items-center p-3">
@@ -96,7 +100,15 @@ function Shops({ productsList, categoriesList }) {
                 </div>
               </div>
             </form>
-            <ProductsGrid data={products} grid={4} />
+            <ProductsGridShop
+              data={products}
+              grid={4}
+              setOpen={({ isOpen, product })=>{ 
+                setOpen(isOpen);
+                setProduct(product)
+                }
+                }
+            />
           </div>
         </div>
       </div>

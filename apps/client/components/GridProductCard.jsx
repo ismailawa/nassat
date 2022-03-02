@@ -5,7 +5,7 @@ import { MdAddShoppingCart } from 'react-icons/md';
 import { useRouter } from 'next/router';
 import { AiOutlineHeart, AiFillHeart, AiOutlineEye } from 'react-icons/ai';
 
-function GridProductCard({ product }) {
+function GridProductCard({ product, setOpen }) {
   const [isLiked, setIsLiked] = useState(false);
   const router = useRouter();
 
@@ -38,7 +38,8 @@ function GridProductCard({ product }) {
           size={25}
           color="red"
           onClick={() => {
-            router.push('/product/[id]', `/product/${product.id}`);
+            setOpen({ isOpen: true, product });
+            // router.push('/product/[id]', `/product/${product.id}`);
           }}
         />
       </div>

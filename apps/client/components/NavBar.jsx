@@ -23,12 +23,12 @@ function NavBar({ initialMenu = 'home' }) {
   };
   return (
     <div
-      className={`h-20 w-full mx-auto fixed left-0 right-0 z-50 shadow:md ${'text-black'}`}
+      className={`h-20 w-full  fixed left-0 right-0 z-50 shadow:md ${'text-black'} ${
+        clientWindowHeight > 100 ? ' bg-white' : ' bg-transparent'
+      } transition-colors duration-500 ease-in-out `}
     >
       <div
-        className={`flex justify-between items-center h-full px-8 ${
-          clientWindowHeight > 100 ? ' bg-white' : ' bg-transparent'
-        } transition-colors duration-500 ease-in-out `}
+        className={`container  mx-auto flex justify-between items-center h-full px-8 `}
       >
         <div>
           <Link href="/">

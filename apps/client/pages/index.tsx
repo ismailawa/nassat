@@ -3,7 +3,7 @@ import Categories from '../components/Categories';
 import productImage from '../assets/images/pops.png';
 import HeroSection from '../components/HeroSection';
 import NavBar from '../components/NavBar';
-import ProductsGrid from '../components/ProductsGrid';
+import ProductsGridIndex from '../components/ProductsGridIndex';
 import Pagination from '../components/Pagination';
 import Layout from '../components/Layout';
 
@@ -24,7 +24,7 @@ export function Index({ productsList }) {
         <HeroSection />
         <div className="lg:container w-full lg:mx-auto pb-20">
           <Categories />
-          <ProductsGrid data={products} grid={5} />
+          <ProductsGridIndex data={products} grid={4} />
           <Pagination />
         </div>
       </div>

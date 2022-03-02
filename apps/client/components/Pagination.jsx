@@ -2,8 +2,8 @@ import React from 'react';
 
 function Pagination() {
   return (
-    <div className="flex justify-center mt-10  absolute left-1/2">
-      <nav aria-label="Page navigation example">
+    <div className="flex justify-center mt-20">
+      <nav aria-label="Page navigation">
         <ul className="inline-flex items-center -space-x-px">
           <li>
             <a
