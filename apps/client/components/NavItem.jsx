@@ -9,7 +9,7 @@ function NavItem({ direct, title, isActive, setSelected }) {
     <Link href={direct}>
       <a
         className={`font-semibold hover:text-red-500 ${
-          router.pathname === direct ? 'text-red-500' : 'text-black'
+          router.pathname === direct ? 'text-blue-600' : 'text-black'
         } cursor-pointer`}
         onClick={setSelected}
       >

@@ -8,6 +8,7 @@ function Product() {
   return (
     <Layout>
       <div className="container min-h-screen mx-auto pt-20">Product</div>
+
     </Layout>
   );
 }

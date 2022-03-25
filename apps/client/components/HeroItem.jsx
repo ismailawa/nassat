@@ -10,8 +10,8 @@ function HeroItem() {
           <h1 className="text-white lg:text-5xl font-bold text-right text-xl">
             You <br /> Order
           </h1>
-          <div className="w-1 lg:h-32 h-16 bg-red-500 rounded-2xl"></div>
-          <h1 className="text-red-500 lg:text-5xl font-bold text-left text-xl">
+          <div className="w-1 lg:h-32 h-16 bg-white rounded-2xl"></div>
+          <h1 className="text-blue-600 lg:text-5xl font-bold text-left text-xl">
             We <br />
             Deliver
           </h1>
@@ -23,8 +23,8 @@ function HeroItem() {
           </h1>
         </div>
         <Link href="/shops/Shops" passHref>
-          <div className="flex bg-red-600 rounded-full justify-center py-3 px-10 items-center top-1/2 left-1/2 cursor-pointer hover:bg-red-700">
-            <h1 className=" text-white font-semibold">Shop Now</h1>
+          <div className="flex bg-white rounded-full justify-center py-3 px-10 items-center top-1/2 left-1/2 cursor-pointer hover:bg-white">
+            <h1 className=" text-red-600 font-semibold">Shop Now</h1>
           </div>
         </Link>
       </div>

@@ -27,8 +27,7 @@ module.exports = {
 
       boxShadow: {
         primary: '0px 8px 24px rgba(234,124,185,0.34)',
-        inverset: '4px 4px 0 #252836',
-        inverseb: '4px -4px 0 #252836',
+        'inverse-top': '4px 4px 0px #252836',
       },
     },
   },
