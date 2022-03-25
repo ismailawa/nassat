@@ -1,12 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 function NavItem({ direct, title, isActive, setSelected }) {
+  const router = useRouter();
+  console.log(router);
   return (
     <Link href={direct}>
       <a
         className={`font-semibold hover:text-red-500 ${
-          isActive ? 'text-red-500' : 'text-black'
+          router.pathname === direct ? 'text-red-500' : 'text-black'
         } cursor-pointer`}
         onClick={setSelected}
       >

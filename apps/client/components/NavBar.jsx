@@ -1,15 +1,18 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import NavItem from './NavItem';
 import ExpandedNavItem from './ExpandedNavItem';
-import { BsCart4, BsHeartFill, BsEyeFill } from 'react-icons/bs';
+import { BsCart4, BsHeartFill } from 'react-icons/bs';
+import Logo from '../assets/images/logo.png';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
+import MiniCart from './MiniCart';
+import Link from 'next/link';
 
 function NavBar({ initialMenu = 'home' }) {
   const config = {
-    type: 'spring',
-    damping: 20,
-    stiffness: 100,
+    damping: 10,
+    stiffness: 50,
   };
   const [selectedMenu, setSelectedMenu] = useState(initialMenu);
   const [clientWindowHeight, setClientWindowHeight] = useState('');
@@ -30,10 +33,8 @@ function NavBar({ initialMenu = 'home' }) {
       <div
         className={`container  mx-auto flex justify-between items-center h-full px-8 `}
       >
-        <div>
-          <Link href="/">
-            <a className="text-3xl font-bold text-red-500">Home</a>
-          </Link>
+        <div className="flex justify-center items-center w-40 h-40">
+          <Image src={Logo} alt="" objectFit="cover" />
         </div>
         <div className="flex space-x-8">
           <div className=" hidden lg:flex space-x-8 items-center">
@@ -44,19 +45,19 @@ function NavBar({ initialMenu = 'home' }) {
               setSelected={() => setSelectedMenu('home')}
             />
             <NavItem
-              direct="/shops/Shops"
+              direct="/shops"
               title="Shop"
               isActive={Boolean(selectedMenu === 'shop')}
               setSelected={() => setSelectedMenu('shop')}
             />
             <NavItem
-              direct="/contact/Contact"
+              direct="/contact"
               title=" Contact Us"
               isActive={Boolean(selectedMenu === 'contact')}
               setSelected={() => setSelectedMenu('contact')}
             />
             <NavItem
-              direct="/orders/Orders"
+              direct="/orders"
               title=" Orders"
               isActive={Boolean(selectedMenu === 'order')}
               setSelected={() => setSelectedMenu('order')}
@@ -67,13 +68,22 @@ function NavBar({ initialMenu = 'home' }) {
 
             <div className=" w-0.5 h-5 bg-slate-500"></div>
             <a
+              href="/auth/Signup"
               className={`${'bg-red-600'} rounded-full ${'text-white'} px-4 py-2 hover:bg-red-800 cursor-pointer`}
             >
               Signup
             </a>
           </div>
           <div className="flex space-x-2 items-center">
-            <ExpandedNavItem Icon={BsHeartFill} items={10}>
+            <Link href="/favourite" passHref>
+              <div className="flex justify-center items-center w-10 h-10 relative cursor-pointer">
+                <div className="flex justify-center items-center w-5 h-5 bg-red-600 rounded-full text-white text-sm absolute right-0 top-0">
+                  5
+                </div>
+                <BsHeartFill size={25} />
+              </div>
+            </Link>
+            <ExpandedNavItem Icon={BsCart4} items={2}>
               <motion.div
                 transition={config}
                 initial={{ scale: 0, opacity: 0, x: '0px', y: '0px' }}
@@ -85,13 +95,9 @@ function NavBar({ initialMenu = 'home' }) {
                 }}
                 exit={{ x: 0, opacity: 0 }}
               >
-                <div className=" absolute bg-white  w-96 rounded-lg shadow-xl border-2 border-gray-300 p-8">
-                  {' '}
-                  hello world
-                </div>
+                <MiniCart />
               </motion.div>
             </ExpandedNavItem>
-            <ExpandedNavItem Icon={BsCart4} items={2} />
           </div>
         </div>
       </div>

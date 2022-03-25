@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-import React from 'react';
+import React, { useContext } from 'react';
+import Logo from '../assets/images/logo.png';
+import Image from 'next/image';
 import { GiShoppingCart } from 'react-icons/gi';
 import {
   FaRegEnvelope,
@@ -17,8 +19,14 @@ function Footer() {
     <div className="flex flex-col w-full justify-center  text-white">
       <div className="flex bg-gray-800 lg:px-20 py-5">
         <div className="flex items-start space-x-2 w-1/4">
-          <h1 className="font-bold text-2xl">NASCODIRECT</h1>
-          <GiShoppingCart size={40} />
+          <Image
+            className="inline-block"
+            src={Logo}
+            alt=""
+            height={200}
+            width={200}
+            objectFit="cover"
+          />
         </div>
         <div className="flex-col space-y-3 w-2/4 pr-10">
           <h1 className="font-semibold">NEW TO DIRECT</h1>

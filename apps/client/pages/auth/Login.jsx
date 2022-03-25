@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import React from 'react';
+import useForm from '../../hooks/useForm';
 import {
   FaFacebookF,
   FaLinkedinIn,
@@ -7,8 +8,16 @@ import {
   FaRegEnvelope,
 } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
+import { useLoginUserMutation } from '../services/auth';
 
 function Login() {
+  const handleLogin = async () => {
+    console.log(formState);
+    const result = await loginUser(formState);
+  };
+  const [formState, handleChange, handleSubmit] = useForm(handleLogin);
+  const { loginUser, result } = useLoginUserMutation();
+
   return (
     <div className="flex flex-col justify-center items-center w-full px-20 text-center bg-gray-100 min-h-screen">
       <div className="bg-white rounded-2xl shadow-2xl flex w-2/3 max-w-4xl">
@@ -48,6 +57,8 @@ function Login() {
                 <input
                   type="email"
                   name="email"
+                  value={formState.email || ''}
+                  onChange={handleChange}
                   placeholder="Enter Email"
                   className=" bg-gray-100 outline-none text-sm flex-1"
                 />
@@ -57,6 +68,8 @@ function Login() {
                 <input
                   type="password"
                   name="password"
+                  value={formState.password || ''}
+                  onChange={handleChange}
                   placeholder="Enter Password"
                   className=" bg-gray-100 outline-none text-sm flex-1"
                 />
@@ -70,12 +83,12 @@ function Login() {
                   Forgot Pasword?
                 </a>
               </div>
-              <a
-                href="/auth/Signup"
-                className="border-2 border-red-500 text-red-500 rounded-full px-12 py-2 inline-block font-semibold hover:bg-red-500 hover:text-white"
+              <div
+                onClick={handleSubmit}
+                className="border-2 border-red-500 text-red-500 rounded-full px-12 py-2 inline-block font-semibold hover:bg-red-500 hover:text-white cursor-pointer"
               >
                 Login
-              </a>
+              </div>
             </div>
           </div>
         </div>
@@ -85,12 +98,9 @@ function Login() {
           <p className="mb-10">
             Provide your personal information to start your journey with us.
           </p>
-          <a
-            href="/auth/Signup"
-            className="border-2 border-white rounded-full px-12 py-2 inline-block font-semibold hover:bg-white hover:text-red-500"
-          >
+          <div className="border-2 border-white rounded-full px-12 py-2 inline-block font-semibold hover:bg-white hover:text-red-500">
             Signup
-          </a>
+          </div>
         </div>
       </div>
     </div>

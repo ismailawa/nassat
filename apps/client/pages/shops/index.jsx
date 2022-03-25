@@ -49,7 +49,6 @@ function Shops({ productsList, categoriesList }) {
       categoryFilter.splice(categoryFilter.indexOf(e.target.name), 1);
       setCategoryFilter([...categoryFilter]);
     }
-    console.log(categoryFilter);
   };
   return (
     <Layout>
@@ -103,11 +102,10 @@ function Shops({ productsList, categoriesList }) {
             <ProductsGridShop
               data={products}
               grid={4}
-              setOpen={({ isOpen, product })=>{ 
+              setOpen={({ isOpen, product }) => {
                 setOpen(isOpen);
-                setProduct(product)
-                }
-                }
+                setProduct(product);
+              }}
             />
           </div>
         </div>

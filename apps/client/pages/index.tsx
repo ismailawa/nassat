@@ -6,12 +6,11 @@ import NavBar from '../components/NavBar';
 import ProductsGridIndex from '../components/ProductsGridIndex';
 import Pagination from '../components/Pagination';
 import Layout from '../components/Layout';
+import ProductDetail from '../components/ProductDetail';
 
-export function Index({ productsList }) {
-  const [products, setProducts] = useState([]);
-  useEffect(() => {
-    setProducts(productsList);
-  }, [productsList]);
+export function Index() {
+  const [open, setOpen] = useState(false);
+  const [product, setProduct] = useState(null);
 
   /*
    * Replace the elements below with your own.
@@ -21,10 +20,17 @@ export function Index({ productsList }) {
   return (
     <Layout>
       <div className="bg-gray-100">
+        <ProductDetail open={open} setOpen={setOpen} product={product} />
         <HeroSection />
         <div className="lg:container w-full lg:mx-auto pb-20">
           <Categories />
-          <ProductsGridIndex data={products} grid={4} />
+          <ProductsGridIndex
+            grid={4}
+            setOpen={({ isOpen, product }) => {
+              setOpen(isOpen);
+              setProduct(product);
+            }}
+          />
           <Pagination />
         </div>
       </div>

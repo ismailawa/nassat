@@ -1,11 +1,35 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useRef } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Image from 'next/image';
 import { Star } from 'react-star';
+import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
+import { MdAddShoppingCart } from 'react-icons/md';
+import { AiOutlineHeart, AiFillHeart, AiOutlineEye } from 'react-icons/ai';
 
 export default function ProductDetail({ open, setOpen, product }) {
   const cancelButtonRef = useRef(null);
+  const [productCount, setProductCount] = useState(1);
+  const [isLiked, setIsLiked] = useState(false);
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+  };
+
+  const handleSetProductCount = (type) => {
+    switch (type) {
+      case '+':
+        setProductCount(productCount + 1);
+        break;
+      case '-':
+        if (productCount > 1) {
+          setProductCount(productCount - 1);
+        }
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -48,7 +72,12 @@ export default function ProductDetail({ open, setOpen, product }) {
               {product && (
                 <div className="flex justify-between m-10 ">
                   <div className="flex border-2 border-gray-400 w-[500px]  h-[500px]  rounded-lg">
-                    <Image src={product.image} alt="" />
+                    <Image
+                      src={product.image[0]}
+                      alt=""
+                      width="500"
+                      height="500"
+                    />
                   </div>
                   <div className="flex flex-col flex-1 ml-8 space-y-3">
                     <h1 className=" text-4xl font-bold">{product.name}</h1>
@@ -83,6 +112,72 @@ export default function ProductDetail({ open, setOpen, product }) {
                       />
                       <div className="flex"> 132 reviews </div>
                     </div>
+                    <div>
+                      <p className=" text-gray-600 font-extralight">
+                        is simply dummy text of the printing and typesetting
+                        industry. Lorem Ipsum has been the industrys standard
+                        dummy text ever since the 1500s, when an unknown printer
+                        took a galley of type and scrambled it to make a type
+                        specimen book. It has survived not only five centuries,
+                        but also the leap into electronic typesetting, remaining
+                        essentially unchanged. It was popularised in the 1960s
+                        with the release of Letraset sheets containing Lorem
+                        Ipsum passages, and more recently with desktop
+                        publishing software like Aldus PageMaker including
+                        versions of Lorem Ipsum.
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className="flex items-center justify-center w-6 h-6 border-2 border-gray-200 rounded-lg cursor-pointer"
+                          onClick={() => handleSetProductCount('-')}
+                        >
+                          <IoIosArrowBack />
+                        </div>
+
+                        <div className="">{productCount}</div>
+                        <div
+                          className="flex items-center justify-center w-6 h-6 border-2 border-gray-200 rounded-lg cursor-pointer"
+                          onClick={() => handleSetProductCount('+')}
+                        >
+                          <IoIosArrowForward />
+                        </div>
+                      </div>
+                      <div className="flex cursor-pointer justify-center items-center bg-red-500 text-white rounded-lg py-1 px-6 space-x-3">
+                        <MdAddShoppingCart />
+                        <span>ADD TO CART</span>
+                      </div>
+                      {isLiked ? (
+                        <AiFillHeart
+                          className=" cursor-pointer"
+                          size={25}
+                          color="red"
+                          onClick={handleLike}
+                        />
+                      ) : (
+                        <AiOutlineHeart
+                          className="cursor-pointer"
+                          size={25}
+                          color="red"
+                          onClick={handleLike}
+                        />
+                      )}
+                    </div>
+                    <div className="border-2 border-gray-200 my-8"></div>
+                    <div className="flex space-x-6 items-center">
+                      <div className="text-2xl font-bold">Total:</div>
+                      <div className="text-2xl">
+                        ₦
+                        {(product.price * productCount).toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -91,7 +186,10 @@ export default function ProductDetail({ open, setOpen, product }) {
                 <button
                   type="button"
                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    setOpen(false);
+                    setProductCount(1);
+                  }}
                   ref={cancelButtonRef}
                 >
                   Close
