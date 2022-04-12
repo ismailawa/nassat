@@ -1,7 +1,7 @@
 const ordersInitialState = {
   orders: {
     loading: false,
-    data: null,
+    orders: null,
     error: null,
   },
 };

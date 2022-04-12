@@ -1,21 +1,23 @@
 import Link from 'next/link';
-import React from 'react';
+import React, {useContext} from 'react';
 import MiniCartItem from './MiniCartItem';
+import {AppContext} from "../context/Provider";
 
 function MiniCart() {
+  const { cartState} = useContext(AppContext);
   return (
     <div className=" absolute bg-white  w-96 rounded-lg shadow-xl border-2 border-gray-300 p-8">
-      <div className="flex flex-col space-y-2">
-        <MiniCartItem />
-        <MiniCartItem />
-        <MiniCartItem />
-        <MiniCartItem />
+      <div className="flex flex-col space-y-2 overflow-y-scroll h-[600px]">
+        {cartState.cart.map(item => (
+          <MiniCartItem key={item.product._id} item={item} />
+        ))}
+
         <div className=" h-0.5 bg-gray-100 mt-4"></div>
         <div className="flex items-center justify-between flex-1 mt-6">
           <h1 className="text-gray-600 text-xl font-bold">Total:</h1>
           <h1 className="text-xl text-red-500">
             ₦
-            {(3000).toLocaleString(undefined, {
+            {(cartState.cart.map((item)=> item.totalPrice).reduce((pr, nt)=> pr+ nt)).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}

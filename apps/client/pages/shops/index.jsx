@@ -214,10 +214,8 @@ export const getStaticProps = async () => {
         },
       ],
       categoriesList: [
-        { id: 1, name: 'Cereals' },
-        { id: 2, name: 'Detergents' },
-        { id: 3, name: 'Biscuits' },
-        { id: 4, name: 'Soups' },
+        { id: 1, name: 'Foods' },
+        { id: 2, name: 'Household' },
       ],
     },
   };

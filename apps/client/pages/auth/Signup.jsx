@@ -1,26 +1,46 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-import React from 'react';
+import React, {useEffect} from 'react';
+import { useRouter } from 'next/router'
+
 import {
-  FaFacebookF,
-  FaLinkedinIn,
-  FaGoogle,
   FaRegEnvelope,
 } from 'react-icons/fa';
+
+import { Toaster, toast} from "react-hot-toast";
+import 'react-toastify/dist/ReactToastify.css';
+
+import {BsFillPersonFill, BsFillTelephoneFill} from 'react-icons/bs';
 import { MdLockOutline } from 'react-icons/md';
 import useForm from '../../hooks/useForm';
 import { useRegisterUserMutation } from '../../services/auth';
 
 function Signup() {
+  const router = useRouter();
   const handleSignup = async () => {
-    const result = await registerUser(formState);
-    console.log(result);
+     await registerUser(formState);
   };
 
   const [formState, handleChange, handleSubmit] = useForm(handleSignup);
 
-  const { registerUser, result } = useRegisterUserMutation();
+  const [registerUser, { isLoading, isError, isSuccess, error }] = useRegisterUserMutation();
+
+  useEffect(() => {
+    if (isError) {
+        toast.error(`${error.data.error}`);
+    }
+    if (isSuccess) {
+        router.push('/auth/login');
+    }
+  }, [ isError, isSuccess]);
 
   return (
+    <>
+      <Toaster
+        position="top-right"
+        autoClose={5000}
+        reverseOrder={false}
+      />
+
     <form
       onSubmit={handleSubmit}
       className="flex flex-col justify-center items-center w-full px-20 text-center bg-gray-100 min-h-screen"
@@ -35,29 +55,19 @@ function Signup() {
               Signup for an account
             </h2>
             <div className="border-2 w-10 border-red-500 inline-block mb-2"></div>
-            <div className="flex justify-center my-10">
-              <a
-                href="#"
-                className="border-2 border-gray-200 rounded-full p-3 mx-1"
-              >
-                <FaFacebookF className="text-sm" />
-              </a>
-              <a
-                href="#"
-                className="border-2 border-gray-200 rounded-full p-3 mx-1"
-              >
-                <FaLinkedinIn className="text-sm" />
-              </a>
-              <a
-                href="#"
-                className="border-2 border-gray-200 rounded-full p-3 mx-1"
-              >
-                <FaGoogle className="text-sm" />
-              </a>
-            </div>
-            <p className=" text-gray-400 my-3">or use your email account</p>
             <div className="flex flex-col items-center">
-              <div className=" bg-gray-100 w-64 p-2 flex items-center mb-3">
+              <div className=" bg-gray-100 w-96 p-2 flex items-center mb-3">
+                <BsFillPersonFill className=" text-gray-400 m-2" />
+                <input
+                  type="text"
+                  name="fullname"
+                  value={formState.fullname || ''}
+                  onChange={handleChange}
+                  placeholder="Enter your fullname"
+                  className=" bg-gray-100 outline-none text-sm flex-1"
+                />
+              </div>
+              <div className=" bg-gray-100 w-96 p-2 flex items-center mb-3">
                 <FaRegEnvelope className=" text-gray-400 m-2" />
                 <input
                   type="email"
@@ -68,7 +78,34 @@ function Signup() {
                   className=" bg-gray-100 outline-none text-sm flex-1"
                 />
               </div>
-              <div className=" bg-gray-100 w-64 p-2 flex items-center mb-3">
+              <div className=" bg-gray-100 w-96 p-2 flex items-center mb-3">
+                <BsFillTelephoneFill className=" text-gray-400 m-2" />
+                <input
+                  type="number"
+                  name="phone"
+                  value={formState.phone || ''}
+                  onChange={handleChange}
+                  placeholder="Enter your phone number"
+                  className=" bg-gray-100 outline-none text-sm flex-1"
+                />
+              </div>
+                <div className=" bg-gray-100 w-96 p-2 flex items-center mb-3">
+                <BsFillPersonFill className=" text-gray-400 m-2" />
+                  <select className="form-select appearance-none bg-gray-100 outline-none text-sm flex-1"
+                          aria-label="Default select example"
+                          name="gender"
+                          value={formState.gender || ''}
+                          defaultValue={"Select Gender"}
+                          onChange={handleChange}
+                  >
+                    <option>Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Others">Others</option>
+                  </select>
+             </div>
+
+              <div className=" bg-gray-100 w-96 p-2 flex items-center mb-3">
                 <MdLockOutline className=" text-gray-400 m-2" />
                 <input
                   type="password"
@@ -79,20 +116,21 @@ function Signup() {
                   className=" bg-gray-100 outline-none text-sm flex-1"
                 />
               </div>
-              {/* <div className="flex justify-between w-64 mb-5">
-                <label className="flex items-center text-sm">
-                  <input type="checkbox" name="remembe" className="mr-1" />
-                  Remember me
-                </label>
-                <a href="#" className=" text-xs">
-                  Forgot Pasword?
-                </a>
-              </div> */}
-              <input
-                type="submit"
-                value="Signup"
-                className="border-2 border-red-500 text-red-500 rounded-full px-12 py-2 inline-block font-semibold hover:bg-red-500 hover:text-white"
-              />
+              {isLoading ? (
+                <button type="button" className="bg-red-500  rounded-full" disabled>
+                  <div className="flex items-center">
+                    <div className="spinner-border animate-spin inline-block w-6 h-6 border-4 rounded-full my-4 mx-14"
+                         role="status">
+                    </div>
+                  </div>
+                </button>
+              ) : (
+                <input
+                  type="submit"
+                  value="Signup"
+                  className="border-2 border-red-500 text-red-500 rounded-full px-12 py-2 inline-block font-semibold hover:bg-red-500 hover:text-white"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -111,6 +149,7 @@ function Signup() {
         </div>
       </div>
     </form>
+    </>
   );
 }
 

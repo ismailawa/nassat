@@ -1,7 +1,8 @@
 const authInitialState = {
   auth: {
     loading: false,
-    data: null,
+    user: null,
+    token: null,
     error: null,
   },
 };

@@ -1,10 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import GridProductCard from './GridProductCard';
 import { useGetProductsQuery } from '../services/products';
+import { AppContext } from '../context/Provider';
 
 function ProductsGridIndex({ grid, setOpen }) {
   const { data, error, isLoading, isFetching, isSuccess } =
     useGetProductsQuery();
+
+  const { favouriteDispatch } = useContext(AppContext);
+
+  // useEffect(() => {
+  //   favouriteDispatch({
+  //     type: 'GET_FROM_FAVOURITE',
+  //   });
+  // }, []);
 
   if (isLoading) return <div>Loading...</div>;
   return (

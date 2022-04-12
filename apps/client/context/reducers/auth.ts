@@ -2,7 +2,8 @@ import {
   LOGIN_ERROR,
   LOGIN_LOADING,
   LOGIN_SUCCESS,
-  REGISTER_ERROR,
+  SET_AUTH_TOKEN,
+  SET_USER,
   REGISTER_LOADING,
   REGISTER_SUCCESS,
 } from '../../constants/actionTypes';
@@ -26,12 +27,26 @@ const auth = (state, { payload, type }) => {
         ...state,
         auth: {
           ...state.auth,
-          loading: false,
-          data: payload,
+          user: payload,
         },
       };
 
-    case REGISTER_ERROR:
+    case SET_AUTH_TOKEN:
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          token: payload,
+        },
+      };
+    case SET_USER:
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          user: JSON.parse(localStorage.getItem('user')),
+        },
+      };
     case LOGIN_ERROR:
       return {
         ...state,

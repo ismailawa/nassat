@@ -6,3 +6,4 @@ export const GET_ORDER_URL = '/register';
 export const CONFIRM_ORDER_URL = '/register';
 export const GET_PRODUCTS_URL = '/register';
 export const GET_CATEGORIES_URL = '/register';
+

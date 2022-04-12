@@ -23,9 +23,9 @@ function Footer() {
             className="inline-block"
             src={Logo}
             alt=""
-            height={200}
-            width={200}
-            objectFit="cover"
+            height={50}
+            width={100}
+
           />
         </div>
         <div className="flex-col space-y-3 w-2/4 pr-10">

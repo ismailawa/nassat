@@ -1,14 +1,89 @@
 import Layout from '../../components/Layout';
-import React, { useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { Tab } from '@headlessui/react';
 import { Fragment } from 'react';
 import { IoMdArrowForward } from 'react-icons/io';
+import {useRouter} from "next/router";
+import useForm from "../../hooks/useForm";
+import {useRegisterUserMutation} from "../../services/auth";
+import {AppContext} from "../../context/Provider";
+import MiniCartItem from "../../components/MiniCartItem";
+import Link from "next/link";
+import {useCreateOtherMutation} from "../../services/orders";
+import {CLEAR_CART} from "../../constants/actionTypes";
 
 function Checkout() {
+
+  const handleSignup = async () => {
+    const result = await createOther({
+      firstName:formState.firstName,
+        lastName:formState.lastName,
+        country:"nigeria",
+        address:formState.address,
+        city:formState.localGovt,
+        state:formState.state,
+        postCode:"00000",
+        phone:formState.phone,
+        email:formState.email,
+        additionalInfo:formState.additionalInfo,
+        longitude:123.232,
+        latitude:123.322,
+        products:cartState.cart.map(item => ({
+          productId:item.product._id,
+          productName:item.product.name,
+          quantityOrdered :item.product.quantity,
+          productPrice:item.product.price,
+          totalPricePurchase:item.totalPrice,
+          productImage:item.product.image[0]})),
+        total:subTotal+shipping,
+    });
+   console.log(result);
+    if(result.data){
+      window.location = result.data.link;
+    }
+    cartDispatch({type: CLEAR_CART});
+  };
+  const { cartState, cartDispatch } = useContext(AppContext);
+  const [subTotal, setSubTotal] = useState(0);
+  const [shipping, setShipping] = useState(0);
+  const [formState, handleChange] = useForm(handleSignup);
+  const [createOther, { isLoading, isError, isSuccess, error }] = useCreateOtherMutation();
+
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [user, setUser] = useState(null);
   const handleNextTab = () => {
     setSelectedIndex(selectedIndex + 1);
   };
+
+  useEffect(()=>{
+
+      if(user){
+
+        formState.firstName = user?.fullname.split(' ')[0];
+        formState.lastName = user?.fullname.split(' ')[1];
+        formState.state = user?.addAddress[0]?.state;
+        formState.localGovt =  user?.addAddress[0]?.localGovt;
+        formState.address =  user?.addAddress[0]?.address;
+        formState.phone =  user?.phone;
+        formState.email =  user?.email;
+      }
+  },[user]);
+
+  useEffect(()=>{
+    const sub = cartState.cart.reduce((acc, item) => acc + item.totalPrice, 0);
+    const ship = 1500 + ((cartState.cart.reduce((acc, item) => acc + item.quantity, 0)-1)* 100);
+    setSubTotal(sub);
+    setShipping(ship);
+  }, [cartState.cart]);
+
+  useEffect(()=>{
+    const localUser = localStorage.getItem('user');
+    if(localUser){
+      setUser(JSON.parse(localUser));
+    }
+  }, [localStorage]);
+
+
   return (
     <Layout>
       <div className="min-h-screen container mx-auto p-20">
@@ -21,7 +96,7 @@ function Checkout() {
               <Tab.List className="flex justify-between">
                 <Tab as={Fragment}>
                   {({ selected }) => (
-                    <div className="flex flex-col space-y-2">
+                    <div className="flex flex-col space-y-2 w-1/2">
                       <div className="flex justify-center items-center space-x-3 cursor-pointer">
                         <div className=" flex justify-center items-center bg-red-500 rounded-full w-6 h-6 text-white">
                           1
@@ -34,27 +109,16 @@ function Checkout() {
                 </Tab>
                 <Tab as={Fragment}>
                   {({ selected }) => (
-                    <div className="flex flex-col space-y-2">
+                    <div className="flex flex-col space-y-2 w-1/2">
                       <div className="flex justify-center items-center space-x-3 cursor-pointer">
                         <div className=" flex justify-center items-center bg-red-500 rounded-full w-6 h-6 text-white">
                           2
                         </div>
-                        <div className="">PAYMENT</div>
-                      </div>
-                      {selected && <div className=" h-1 bg-red-500"></div>}
-                    </div>
-                  )}
-                </Tab>
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <div className="flex flex-col space-y-2">
-                      <div className="flex justify-center items-center space-x-3 cursor-pointer">
-                        <div className=" flex justify-center items-center bg-red-500 rounded-full w-6 h-6 text-white">
-                          3
-                        </div>
                         <div className="">REVIEW & CONFIRMATION</div>
                       </div>
-                      {selected && <div className=" h-1 bg-red-500"></div>}
+                      {selected && <div className=" h-1 bg-red-500">
+
+                      </div>}
                     </div>
                   )}
                 </Tab>
@@ -74,6 +138,9 @@ function Checkout() {
                           className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                           id="grid-first-name"
                           type="text"
+                          name="firstName"
+                          value={formState.firstName  || ''}
+                          onChange={handleChange}
                           placeholder="Jane"
                         />
                         {/* <p className="text-red-500 text-xs italic">
@@ -91,6 +158,9 @@ function Checkout() {
                           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                           id="grid-last-name"
                           type="text"
+                          name="lastName"
+                          onChange={handleChange}
+                          value={formState.lastName || ''}
                           placeholder="Doe"
                         />
                       </div>
@@ -107,6 +177,10 @@ function Checkout() {
                           <select
                             className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             id="grid-state"
+                            name="state"
+                            value={formState.state || ''}
+                            defaultValue={"Select State"}
+                            onChange={handleChange}
                           >
                             <option>Plateau</option>
                           </select>
@@ -132,24 +206,13 @@ function Checkout() {
                           <select
                             className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             id="grid-state"
+                            name="lga"
+                            value={formState.localGovt || ''}
+                            defaultValue={"Select LGA"}
+                            onChange={handleChange}
                           >
-                            <option>Barkin Ladi</option>
-                            <option>Bassa</option>
-                            <option>Bokkos</option>
-                            <option>Jos-East</option>
                             <option>Jos-North</option>
                             <option>Jos-South</option>
-                            <option>Kanam</option>
-                            <option>Kanke</option>
-                            <option>Langtang North</option>
-                            <option>Langtang South</option>
-                            <option>Mangu</option>
-                            <option>Mikang</option>
-                            <option>Pankshin</option>
-                            <option>Quaan Pan</option>
-                            <option>Riyom</option>
-                            <option>Shendam</option>
-                            <option>Wase</option>
                           </select>
                           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <svg
@@ -174,7 +237,10 @@ function Checkout() {
                         <input
                           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                           id="grid-password"
-                          type="password"
+                          type="text"
+                          name="address"
+                          value={formState.address || ''}
+                          onChange={handleChange}
                           placeholder="Enter your house address"
                         />
                       </div>
@@ -191,6 +257,9 @@ function Checkout() {
                           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                           id="grid-city"
                           type="text"
+                          name="phone"
+                          value={formState.phone ||  ''}
+                          onChange={handleChange}
                           placeholder="+23490XXXXXX54"
                         />
                       </div>
@@ -206,6 +275,9 @@ function Checkout() {
                           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                           id="grid-zip"
                           type="email"
+                          name="email"
+                          value={formState.email ||  user?.email}
+                          onChange={handleChange}
                           placeholder="example@email.com"
                         />
                       </div>
@@ -225,6 +297,9 @@ function Checkout() {
                           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                           id="grid-password"
                           type="text"
+                          name="additionalInfo"
+                          value={formState.additionalInfo || ""}
+                          onChange={handleChange}
                           rows="6"
                           placeholder="Note about your order, e.g. special note for delivery"
                         ></textarea>
@@ -241,8 +316,72 @@ function Checkout() {
                     </div>
                   </div>
                 </Tab.Panel>
-                <Tab.Panel>payment</Tab.Panel>
-                <Tab.Panel>Payments</Tab.Panel>
+                {/*<Tab.Panel>payment</Tab.Panel>*/}
+                <Tab.Panel>
+                  <div className="flex w-full justify-between space-x-1">
+                    <div className="flex flex-col w-1/2 m-3 bg-gray-100 p-8 rounded-xl space-y-3 h-96">
+                      <h1 className="text-red-500 font-bold text-2xl mb-2">Shipping Address</h1>
+                      <div className="flex justify-between">
+                        <h1>Full Name</h1>
+                        <p>{formState.firstName} {formState.lastName}</p>
+                      </div>
+                      <div className="flex justify-between">
+                        <h1>State</h1>
+                        <p>{formState.state}</p>
+                      </div>
+                      <div className="flex justify-between">
+                        <h1>City</h1>
+                        <p>{formState.localGovt}</p>
+                      </div>
+                      <div className="flex justify-between">
+                        <h1>Address</h1>
+                        <p>{formState.address}</p>
+                      </div>
+                      <div className="flex justify-between">
+                        <h1>Phone</h1>
+                        <p>{formState.phone}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col w-1/2 m-3 bg-gray-100 p-8 rounded-xl">
+                      <h1 className="text-red-500 font-bold text-2xl mb-2">Summary</h1>
+                      {cartState.cart.map(item => (
+                        <MiniCartItem key={item.product._id} item={item} visible={false} />
+                      ))}
+                      <div className="h-0.5 bg-black my-3"></div>
+                      <div className="flex justify-between">
+                        <span className="text-xl">Subtotal</span>
+                        <span className="text-xl"> ₦ {subTotal.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xl">Shipping</span>
+                        <span className="text-xl"> ₦ {shipping.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xl">Tax</span>
+                        <span className="text-xl"> ₦ 0</span>
+                      </div>
+                      <div className="h-0.5 bg-black my-3"></div>
+                      <div className="flex justify-between">
+                        <span className="text-xl">Grand Total</span>
+                        <span className="text-xl"> ₦ {(shipping + subTotal).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}</span>
+                      </div>
+
+                        <div className="flex items-center justify-center space-x-3 cursor-pointer text-white bg-red-500 rounded-full py-2 px-5 hover:bg-red-700 mt-3" onClick={handleSignup}>
+                          <span className="text-xl">Order Now</span>
+                        </div>
+
+                    </div>
+                  </div>
+                </Tab.Panel>
               </Tab.Panels>
             </Tab.Group>
           </form>

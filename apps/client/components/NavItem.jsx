@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 
 function NavItem({ direct, title, isActive, setSelected }) {
   const router = useRouter();
-  console.log(router);
   return (
     <Link href={direct}>
       <a

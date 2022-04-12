@@ -1,9 +1,7 @@
 const cartsInitialState = {
-  carts: {
     loading: false,
-    data: null,
+    cart: [],
     error: null,
-  },
 };
 
 export default cartsInitialState;

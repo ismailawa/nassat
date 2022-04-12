@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import NavItem from './NavItem';
 import ExpandedNavItem from './ExpandedNavItem';
 import { BsCart4, BsHeartFill } from 'react-icons/bs';
@@ -8,18 +8,28 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import MiniCart from './MiniCart';
 import Link from 'next/link';
+import { AppContext } from '../context/Provider';
 
 function NavBar({ initialMenu = 'home' }) {
+  const { cartState, favouriteState } = useContext(AppContext);
   const config = {
     damping: 10,
     stiffness: 50,
   };
   const [selectedMenu, setSelectedMenu] = useState(initialMenu);
+  const [user, setUser] = useState(null);
   const [clientWindowHeight, setClientWindowHeight] = useState('');
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   });
+
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      setUser(JSON.parse(user));
+    }
+  }, []);
 
   const handleScroll = () => {
     setClientWindowHeight(window.scrollY);
@@ -34,7 +44,7 @@ function NavBar({ initialMenu = 'home' }) {
         className={`container  mx-auto flex justify-between items-center h-full px-8 `}
       >
         <div className="flex justify-center items-center w-40 h-40">
-          <Image src={Logo} alt="" objectFit="cover" />
+          <Image src={Logo} alt="" width={100} height={50} />
         </div>
         <div className="flex space-x-8">
           <div className=" hidden lg:flex space-x-8 items-center">
@@ -63,27 +73,39 @@ function NavBar({ initialMenu = 'home' }) {
               setSelected={() => setSelectedMenu('order')}
             />
           </div>
-          <div className="hidden lg:flex space-x-2 items-center">
-            <NavItem direct="/auth/Login" title="Login" />
+          {user == null ? (
+            <div className="hidden lg:flex space-x-2 items-center">
+              <NavItem direct="/auth/login" title="Login" />
 
-            <div className=" w-0.5 h-5 bg-slate-500"></div>
-            <a
-              href="/auth/Signup"
-              className={`${'bg-red-600'} rounded-full ${'text-white'} px-4 py-2 hover:bg-red-800 cursor-pointer`}
+              <div className=" w-0.5 h-5 bg-slate-500"></div>
+              <a
+                href="/auth/Signup"
+                className={`${'bg-red-600'} rounded-full ${'text-white'} px-4 py-2 hover:bg-red-800 cursor-pointer`}
+              >
+                Signup
+              </a>
+            </div>
+          ) : (
+            <div
+              onClick={() => {
+                localStorage.removeItem('user');
+                setUser(null);
+              }}
+              className={`${'bg-gray-600'} rounded-full ${'text-white'} px-4 py-2 hover:bg-gray-500 cursor-pointer`}
             >
-              Signup
-            </a>
-          </div>
+              Logout
+            </div>
+          )}
           <div className="flex space-x-2 items-center">
             <Link href="/favourite" passHref>
               <div className="flex justify-center items-center w-10 h-10 relative cursor-pointer">
                 <div className="flex justify-center items-center w-5 h-5 bg-red-600 rounded-full text-white text-sm absolute right-0 top-0">
-                  5
+                  {favouriteState.favourite.length}
                 </div>
                 <BsHeartFill size={25} />
               </div>
             </Link>
-            <ExpandedNavItem Icon={BsCart4} items={2}>
+            <ExpandedNavItem Icon={BsCart4} items={cartState.cart.length}>
               <motion.div
                 transition={config}
                 initial={{ scale: 0, opacity: 0, x: '0px', y: '0px' }}
