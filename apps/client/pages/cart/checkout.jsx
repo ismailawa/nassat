@@ -1,53 +1,54 @@
 import Layout from '../../components/Layout';
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Tab } from '@headlessui/react';
 import { Fragment } from 'react';
 import { IoMdArrowForward } from 'react-icons/io';
-import {useRouter} from "next/router";
-import useForm from "../../hooks/useForm";
-import {useRegisterUserMutation} from "../../services/auth";
-import {AppContext} from "../../context/Provider";
-import MiniCartItem from "../../components/MiniCartItem";
-import Link from "next/link";
-import {useCreateOtherMutation} from "../../services/orders";
-import {CLEAR_CART} from "../../constants/actionTypes";
+import { useRouter } from 'next/router';
+import useForm from '../../hooks/useForm';
+import { useRegisterUserMutation } from '../../services/auth';
+import { AppContext } from '../../context/Provider';
+import MiniCartItem from '../../components/MiniCartItem';
+import Link from 'next/link';
+import { useCreateOtherMutation } from '../../services/orders';
+import { CLEAR_CART } from '../../constants/actionTypes';
 
 function Checkout() {
-
   const handleSignup = async () => {
     const result = await createOther({
-      firstName:formState.firstName,
-        lastName:formState.lastName,
-        country:"nigeria",
-        address:formState.address,
-        city:formState.localGovt,
-        state:formState.state,
-        postCode:"00000",
-        phone:formState.phone,
-        email:formState.email,
-        additionalInfo:formState.additionalInfo,
-        longitude:123.232,
-        latitude:123.322,
-        products:cartState.cart.map(item => ({
-          productId:item.product._id,
-          productName:item.product.name,
-          quantityOrdered :item.product.quantity,
-          productPrice:item.product.price,
-          totalPricePurchase:item.totalPrice,
-          productImage:item.product.image[0]})),
-        total:subTotal+shipping,
+      firstName: formState.firstName,
+      lastName: formState.lastName,
+      country: 'nigeria',
+      address: formState.address,
+      city: formState.localGovt,
+      state: formState.state,
+      postCode: '00000',
+      phone: formState.phone,
+      email: formState.email,
+      additionalInfo: formState.additionalInfo,
+      longitude: 123.232,
+      latitude: 123.322,
+      products: cartState.cart.map((item) => ({
+        productId: item.product._id,
+        productName: item.product.name,
+        quantityOrdered: item.product.quantity,
+        productPrice: item.product.price,
+        totalPricePurchase: item.totalPrice,
+        productImage: item.product.image[0],
+      })),
+      total: subTotal + shipping,
     });
-   console.log(result);
-    if(result.data){
+    console.log(result);
+    if (result.data) {
       window.location = result.data.link;
     }
-    cartDispatch({type: CLEAR_CART});
+    cartDispatch({ type: CLEAR_CART });
   };
   const { cartState, cartDispatch } = useContext(AppContext);
   const [subTotal, setSubTotal] = useState(0);
   const [shipping, setShipping] = useState(0);
   const [formState, handleChange] = useForm(handleSignup);
-  const [createOther, { isLoading, isError, isSuccess, error }] = useCreateOtherMutation();
+  const [createOther, { isLoading, isError, isSuccess, error }] =
+    useCreateOtherMutation();
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [user, setUser] = useState(null);
@@ -55,34 +56,33 @@ function Checkout() {
     setSelectedIndex(selectedIndex + 1);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
+    if (user) {
+      formState.firstName = user?.fullname.split(' ')[0];
+      formState.lastName = user?.fullname.split(' ')[1];
+      formState.state = user?.addAddress[0]?.state;
+      formState.localGovt = user?.addAddress[0]?.localGovt;
+      formState.address = user?.addAddress[0]?.address;
+      formState.phone = user?.phone;
+      formState.email = user?.email;
+    }
+  }, []);
 
-      if(user){
-
-        formState.firstName = user?.fullname.split(' ')[0];
-        formState.lastName = user?.fullname.split(' ')[1];
-        formState.state = user?.addAddress[0]?.state;
-        formState.localGovt =  user?.addAddress[0]?.localGovt;
-        formState.address =  user?.addAddress[0]?.address;
-        formState.phone =  user?.phone;
-        formState.email =  user?.email;
-      }
-  },[user]);
-
-  useEffect(()=>{
+  useEffect(() => {
     const sub = cartState.cart.reduce((acc, item) => acc + item.totalPrice, 0);
-    const ship = 1500 + ((cartState.cart.reduce((acc, item) => acc + item.quantity, 0)-1)* 100);
+    const ship =
+      1500 +
+      (cartState.cart.reduce((acc, item) => acc + item.quantity, 0) - 1) * 100;
     setSubTotal(sub);
     setShipping(ship);
   }, [cartState.cart]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const localUser = localStorage.getItem('user');
-    if(localUser){
+    if (localUser) {
       setUser(JSON.parse(localUser));
     }
-  }, [localStorage]);
-
+  }, []);
 
   return (
     <Layout>
@@ -116,9 +116,7 @@ function Checkout() {
                         </div>
                         <div className="">REVIEW & CONFIRMATION</div>
                       </div>
-                      {selected && <div className=" h-1 bg-red-500">
-
-                      </div>}
+                      {selected && <div className=" h-1 bg-red-500"></div>}
                     </div>
                   )}
                 </Tab>
@@ -139,7 +137,7 @@ function Checkout() {
                           id="grid-first-name"
                           type="text"
                           name="firstName"
-                          value={formState.firstName  || ''}
+                          value={formState.firstName || ''}
                           onChange={handleChange}
                           placeholder="Jane"
                         />
@@ -179,7 +177,7 @@ function Checkout() {
                             id="grid-state"
                             name="state"
                             value={formState.state || ''}
-                            defaultValue={"Select State"}
+                            defaultValue={'Select State'}
                             onChange={handleChange}
                           >
                             <option>Plateau</option>
@@ -208,7 +206,7 @@ function Checkout() {
                             id="grid-state"
                             name="lga"
                             value={formState.localGovt || ''}
-                            defaultValue={"Select LGA"}
+                            defaultValue={'Select LGA'}
                             onChange={handleChange}
                           >
                             <option>Jos-North</option>
@@ -258,7 +256,7 @@ function Checkout() {
                           id="grid-city"
                           type="text"
                           name="phone"
-                          value={formState.phone ||  ''}
+                          value={formState.phone || ''}
                           onChange={handleChange}
                           placeholder="+23490XXXXXX54"
                         />
@@ -276,7 +274,7 @@ function Checkout() {
                           id="grid-zip"
                           type="email"
                           name="email"
-                          value={formState.email ||  user?.email}
+                          value={formState.email || user?.email}
                           onChange={handleChange}
                           placeholder="example@email.com"
                         />
@@ -298,7 +296,7 @@ function Checkout() {
                           id="grid-password"
                           type="text"
                           name="additionalInfo"
-                          value={formState.additionalInfo || ""}
+                          value={formState.additionalInfo || ''}
                           onChange={handleChange}
                           rows="6"
                           placeholder="Note about your order, e.g. special note for delivery"
@@ -320,10 +318,14 @@ function Checkout() {
                 <Tab.Panel>
                   <div className="flex w-full justify-between space-x-1">
                     <div className="flex flex-col w-1/2 m-3 bg-gray-100 p-8 rounded-xl space-y-3 h-96">
-                      <h1 className="text-red-500 font-bold text-2xl mb-2">Shipping Address</h1>
+                      <h1 className="text-red-500 font-bold text-2xl mb-2">
+                        Shipping Address
+                      </h1>
                       <div className="flex justify-between">
                         <h1>Full Name</h1>
-                        <p>{formState.firstName} {formState.lastName}</p>
+                        <p>
+                          {formState.firstName} {formState.lastName}
+                        </p>
                       </div>
                       <div className="flex justify-between">
                         <h1>State</h1>
@@ -343,24 +345,38 @@ function Checkout() {
                       </div>
                     </div>
                     <div className="flex flex-col w-1/2 m-3 bg-gray-100 p-8 rounded-xl">
-                      <h1 className="text-red-500 font-bold text-2xl mb-2">Summary</h1>
-                      {cartState.cart.map(item => (
-                        <MiniCartItem key={item.product._id} item={item} visible={false} />
+                      <h1 className="text-red-500 font-bold text-2xl mb-2">
+                        Summary
+                      </h1>
+                      {cartState.cart.map((item) => (
+                        <MiniCartItem
+                          key={item.product._id}
+                          item={item}
+                          visible={false}
+                        />
                       ))}
                       <div className="h-0.5 bg-black my-3"></div>
                       <div className="flex justify-between">
                         <span className="text-xl">Subtotal</span>
-                        <span className="text-xl"> ₦ {subTotal.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}</span>
+                        <span className="text-xl">
+                          {' '}
+                          ₦{' '}
+                          {subTotal.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-xl">Shipping</span>
-                        <span className="text-xl"> ₦ {shipping.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}</span>
+                        <span className="text-xl">
+                          {' '}
+                          ₦{' '}
+                          {shipping.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-xl">Tax</span>
@@ -369,16 +385,22 @@ function Checkout() {
                       <div className="h-0.5 bg-black my-3"></div>
                       <div className="flex justify-between">
                         <span className="text-xl">Grand Total</span>
-                        <span className="text-xl"> ₦ {(shipping + subTotal).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}</span>
+                        <span className="text-xl">
+                          {' '}
+                          ₦{' '}
+                          {(shipping + subTotal).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
                       </div>
 
-                        <div className="flex items-center justify-center space-x-3 cursor-pointer text-white bg-red-500 rounded-full py-2 px-5 hover:bg-red-700 mt-3" onClick={handleSignup}>
-                          <span className="text-xl">Order Now</span>
-                        </div>
-
+                      <div
+                        className="flex items-center justify-center space-x-3 cursor-pointer text-white bg-red-500 rounded-full py-2 px-5 hover:bg-red-700 mt-3"
+                        onClick={handleSignup}
+                      >
+                        <span className="text-xl">Order Now</span>
+                      </div>
                     </div>
                   </div>
                 </Tab.Panel>
